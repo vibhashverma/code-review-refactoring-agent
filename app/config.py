@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     github_api_url: str = "https://api.github.com"
     github_webhook_secret: SecretStr = SecretStr("")
     gemini_api_key: SecretStr = SecretStr("")
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.8-flash"
 
     checkpoint_db_path: str = "data/checkpoints.sqlite"
     max_revisions: int = 5

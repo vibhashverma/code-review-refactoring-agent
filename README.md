@@ -134,7 +134,7 @@ cp .env.example .env               # then fill in the values
 | `GITHUB_API_URL` | Default `https://api.github.com` (change for GitHub Enterprise) |
 | `GITHUB_WEBHOOK_SECRET` | Shared secret for `X-Hub-Signature-256` verification |
 | `GEMINI_API_KEY` | Google Gemini API key |
-| `GEMINI_MODEL` | Default `gemini-2.5-flash` |
+| `GEMINI_MODEL` | Default `gemini-3.8-flash` |
 
 Optional: `CHECKPOINT_DB_PATH` (default `data/checkpoints.sqlite`),
 `MAX_REVISIONS` (5), `MAX_FILE_BYTES` (200000), `MAX_FILES_PER_PR` (20).

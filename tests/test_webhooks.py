@@ -49,7 +49,11 @@ def post(client, payload, event="pull_request", headers=None):
     return client.post(
         "/api/webhooks/github",
         content=json.dumps(payload),
-        headers={"X-GitHub-Event": event, "Content-Type": "application/json", **(headers or {})},
+        headers={
+            "X-GitHub-Event": event,
+            "Content-Type": "application/json",
+            **(headers or {}),
+        },
     )
 
 
@@ -115,7 +119,9 @@ def test_signature_verification(client, monkeypatch):
 
     assert post(client, pr_payload()).status_code == 401
     assert (
-        post(client, pr_payload(), headers={"X-Hub-Signature-256": "sha256=bad"}).status_code
+        post(
+            client, pr_payload(), headers={"X-Hub-Signature-256": "sha256=bad"}
+        ).status_code
         == 401
     )
     ok = client.post(

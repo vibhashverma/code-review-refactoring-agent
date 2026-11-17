@@ -190,7 +190,9 @@ def propose_refactor_node(state: ReviewState, deps: Dependencies) -> dict[str, A
 
     refactored_lint: dict[str, dict[str, Any]] = {}
     for path, code in proposals.items():
-        refactored_lint[path] = json.loads(run_linter_tool.invoke({"code_string": code}))
+        refactored_lint[path] = json.loads(
+            run_linter_tool.invoke({"code_string": code})
+        )
 
     return {
         "refactored_code": proposals,

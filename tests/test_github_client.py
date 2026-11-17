@@ -64,7 +64,9 @@ def test_token_sent_as_bearer_header():
 
 def test_pagination_follows_next_links():
     client, session = client_with(
-        make_response(payload=[{"filename": "a.py"}], links={"next": "https://api.test/p2"}),
+        make_response(
+            payload=[{"filename": "a.py"}], links={"next": "https://api.test/p2"}
+        ),
         make_response(payload=[{"filename": "b.py"}]),
     )
     files = client.get_pull_request_files("o", "r", 1)
@@ -76,7 +78,12 @@ def test_get_file_content_decodes_base64():
     encoded = base64.b64encode(b"x = 1\n").decode()
     client, _ = client_with(
         make_response(
-            payload={"type": "file", "encoding": "base64", "content": encoded, "sha": "abc"}
+            payload={
+                "type": "file",
+                "encoding": "base64",
+                "content": encoded,
+                "sha": "abc",
+            }
         )
     )
     assert client.get_file_content("o", "r", "a.py", "main") == ("x = 1\n", "abc")
@@ -97,7 +104,12 @@ def test_update_file_sends_base64_content_and_branch():
     [
         (401, {}, {"message": "Bad credentials"}, GitHubAuthError),
         (403, {}, {"message": "Resource not accessible"}, GitHubPermissionError),
-        (403, {"X-RateLimit-Remaining": "0"}, {"message": "forbidden"}, GitHubRateLimitError),
+        (
+            403,
+            {"X-RateLimit-Remaining": "0"},
+            {"message": "forbidden"},
+            GitHubRateLimitError,
+        ),
         (429, {}, {"message": "slow down"}, GitHubRateLimitError),
         (404, {}, {"message": "Not Found"}, GitHubNotFoundError),
         (409, {}, {"message": "sha does not match"}, GitHubConflictError),

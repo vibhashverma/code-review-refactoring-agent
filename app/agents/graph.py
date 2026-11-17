@@ -32,9 +32,7 @@ def _continue_or_end(next_node: str):
     return route
 
 
-def build_graph(
-    checkpointer: Any, deps: Dependencies | None = None
-) -> Any:
+def build_graph(checkpointer: Any, deps: Dependencies | None = None) -> Any:
     """Compile the review graph.
 
     Flow: fetch_pr -> lint_code -> propose_refactor -> [HUMAN] -> apply_changes.

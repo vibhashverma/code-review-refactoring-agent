@@ -1,4 +1,4 @@
-"""Shared fakes and fixtures. No real GitHub or OpenAI access is used."""
+"""Shared fakes and fixtures. No real GitHub or LLM access is used."""
 
 from __future__ import annotations
 

@@ -23,7 +23,7 @@ explicit approval, and rejections feed reviewer feedback back into a new proposa
 - GitHub REST client with pagination, typed errors (auth, permission, 404, rate limit, conflict).
 - FastAPI endpoints with Pydantic validation, HMAC webhook signature check, OpenAPI docs.
 - Revision cap (`MAX_REVISIONS`, default 5) prevents endless reject loops.
-- Test suite (no real GitHub/OpenAI needed), Dockerfile and Compose.
+- Test suite (no real GitHub/Gemini needed), Dockerfile and Compose.
 
 ## System architecture
 
@@ -35,7 +35,7 @@ flowchart LR
     G <--> DB[(SQLite checkpoints)]
     G --> GHC[GitHub REST client]
     G --> LINT[Linter tool: Black + Flake8]
-    G --> LLM[OpenAI via LangChain]
+    G --> LLM[Google Gemini via LangChain]
     Human([Reviewer]) -->|POST /api/reviews/id/approve| API
     GHC -->|commit approved code| GH
 ```
@@ -113,7 +113,7 @@ main.py  Dockerfile  docker-compose.yml  openapi.json  requirements.txt  pytest.
 
 ## Technology stack
 
-Python 3.11+, LangGraph, LangChain / LangChain Core, `langchain-openai`,
+Python 3.11+, LangGraph, LangChain / LangChain Core, `langchain-google-genai` (Gemini),
 `langgraph-checkpoint-sqlite`, FastAPI, Uvicorn, Pydantic (+ pydantic-settings),
 GitHub REST API (`requests`), Black, Flake8, Pytest, python-dotenv, Docker.
 
@@ -133,8 +133,8 @@ cp .env.example .env               # then fill in the values
 | `GITHUB_TOKEN` | GitHub token used to read PRs and commit |
 | `GITHUB_API_URL` | Default `https://api.github.com` (change for GitHub Enterprise) |
 | `GITHUB_WEBHOOK_SECRET` | Shared secret for `X-Hub-Signature-256` verification |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `OPENAI_MODEL` | Default `gpt-4o-mini` |
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `GEMINI_MODEL` | Default `gemini-2.5-flash` |
 
 Optional: `CHECKPOINT_DB_PATH` (default `data/checkpoints.sqlite`),
 `MAX_REVISIONS` (5), `MAX_FILE_BYTES` (200000), `MAX_FILES_PER_PR` (20).
@@ -149,10 +149,10 @@ Secrets are held as `SecretStr` and never logged. `.env` is git-ignored.
 
 For PRs from forks the token can only commit if the fork permits maintainer edits.
 
-## OpenAI API setup
+## Gemini API setup
 
-Create a key at <https://platform.openai.com/api-keys>, set `OPENAI_API_KEY`, and
-optionally change `OPENAI_MODEL`.
+Create a key at <https://aistudio.google.com/apikey>, set `GEMINI_API_KEY`, and
+optionally change `GEMINI_MODEL`.
 
 ## Running the application
 
@@ -246,7 +246,7 @@ Feedback is mandatory when rejecting.
 pytest
 ```
 
-All external services (GitHub, OpenAI) are faked, so no credentials are needed.
+All external services (GitHub, Gemini) are faked, so no credentials are needed.
 Black and Flake8 are run for real in the linter tests. Coverage: linter isolation
 and cleanup, graph execution and the interrupt, rejection loop on one thread,
 approval and commit, restart persistence, GitHub client errors/pagination, and all

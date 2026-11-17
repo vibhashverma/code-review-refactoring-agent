@@ -89,7 +89,7 @@ def test_subprocess_uses_arg_lists_without_shell_and_with_timeout():
 
 
 def test_environment_does_not_leak_secrets(monkeypatch):
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-secret")
+    monkeypatch.setenv("GEMINI_API_KEY", "sk-secret")
     monkeypatch.setenv("GITHUB_TOKEN", "ghp-secret")
     env = linter_tool._safe_env("/tmp/x")
     assert "sk-secret" not in env.values()

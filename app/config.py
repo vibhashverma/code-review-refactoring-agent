@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     github_token: SecretStr = SecretStr("")
     github_api_url: str = "https://api.github.com"
     github_webhook_secret: SecretStr = SecretStr("")
-    openai_api_key: SecretStr = SecretStr("")
-    openai_model: str = "gpt-4o-mini"
+    gemini_api_key: SecretStr = SecretStr("")
+    gemini_model: str = "gemini-2.5-flash"
 
     checkpoint_db_path: str = "data/checkpoints.sqlite"
     max_revisions: int = 5
@@ -38,11 +38,11 @@ class Settings(BaseSettings):
             raise ConfigurationError("GITHUB_TOKEN is not configured")
         return value
 
-    def require_openai_key(self) -> str:
-        """Return the OpenAI key or raise ``ConfigurationError``."""
-        value = self.openai_api_key.get_secret_value()
+    def require_gemini_key(self) -> str:
+        """Return the Gemini key or raise ``ConfigurationError``."""
+        value = self.gemini_api_key.get_secret_value()
         if not value:
-            raise ConfigurationError("OPENAI_API_KEY is not configured")
+            raise ConfigurationError("GEMINI_API_KEY is not configured")
         return value
 
     def missing_required(self) -> list[str]:
@@ -50,8 +50,8 @@ class Settings(BaseSettings):
         missing = []
         if not self.github_token.get_secret_value():
             missing.append("GITHUB_TOKEN")
-        if not self.openai_api_key.get_secret_value():
-            missing.append("OPENAI_API_KEY")
+        if not self.gemini_api_key.get_secret_value():
+            missing.append("GEMINI_API_KEY")
         return missing
 
 

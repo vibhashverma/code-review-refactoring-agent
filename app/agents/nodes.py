@@ -40,15 +40,15 @@ class Dependencies:
 
 
 def default_dependencies() -> Dependencies:
-    """Production dependencies: real GitHub client and OpenAI chat model."""
+    """Production dependencies: real GitHub client and Gemini chat model."""
 
     def make_llm() -> Any:
-        from langchain_openai import ChatOpenAI
+        from langchain_google_genai import ChatGoogleGenerativeAI
 
         settings = get_settings()
-        return ChatOpenAI(
-            model=settings.openai_model,
-            api_key=settings.require_openai_key(),
+        return ChatGoogleGenerativeAI(
+            model=settings.gemini_model,
+            google_api_key=settings.require_gemini_key(),
             temperature=0,
             timeout=60,
         )
@@ -71,6 +71,19 @@ def _error(message: str, event: str) -> dict[str, Any]:
         "error_message": message,
         "history": [_event(event, error=message)],
     }
+
+
+def _message_text(content: Any) -> str:
+    """Flatten chat-model content (str or list of parts) to plain text."""
+    if isinstance(content, str):
+        return content
+    parts = []
+    for part in content:
+        if isinstance(part, str):
+            parts.append(part)
+        elif isinstance(part, dict) and part.get("type", "text") == "text":
+            parts.append(part.get("text", ""))
+    return "".join(parts)
 
 
 def strip_code_fences(text: str) -> str:
@@ -181,7 +194,7 @@ def propose_refactor_node(state: ReviewState, deps: Dependencies) -> dict[str, A
             reply = llm.invoke(
                 [SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=prompt)]
             )
-            content = reply.content if isinstance(reply.content, str) else str(reply)
+            content = _message_text(reply.content)
             proposals[path] = strip_code_fences(content)
     except Exception as exc:  # LLM/network/config failures
         return _error(

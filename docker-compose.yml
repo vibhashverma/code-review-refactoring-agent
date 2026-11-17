@@ -1,0 +1,27 @@
+services:
+  agent:
+    build: .
+    image: code-review-refactoring-agent:latest
+    ports:
+      - "8000:8000"
+    # Secrets come from your local .env file (never baked into the image).
+    env_file:
+      - .env
+    environment:
+      CHECKPOINT_DB_PATH: /data/checkpoints.sqlite
+    volumes:
+      - checkpoint-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=4)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  checkpoint-data:
